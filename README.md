@@ -1,29 +1,10 @@
 Purpose
 =======
 
-Spin up vagrant multi node environment and manage all nodes using Ansible. Upon spinning up vagrant will provision each node using Ansible to bootstrap the nodes. During the bootstrap each node will have a respective host_vars configuration file which will be updated with their eth1 address and ssh key file location. This allows you to run Ansible plays from within your HostOS or within any of your vagrant nodes.
+Spins up a Vagrant environment for testing Docker. Also allows you to learn Ansible along with Docker.
 
 Requirements
 ============
-
-The following packages must be installed on your Host you intend on running all of this from. If Ansible is not available for your OS (Windows) You can modify the following lines in the Vagrantfile.
-
-From:
-````
-#      node.vm.provision :shell, path: "bootstrap_ansible.sh"
-
-config.vm.provision :ansible do |ansible|
-  ansible.playbook = "bootstrap.yml"
-end
-````
-To:
-````
-      node.vm.provision :shell, path: "bootstrap_ansible.sh"
-
-#config.vm.provision :ansible do |ansible|
-#  ansible.playbook = "bootstrap.yml"
-#end
-````
 
 Ansible (http://www.ansible.com/home)
 
@@ -31,7 +12,27 @@ VirtualBox (https://www.virtualbox.org/)
 
 Vagrant (https://www.vagrantup.com/)
 
+Usage
+=====
 
+````
+git clone https://github.com/mrlesmithjr/vagrant-ansible-docker.git
+cd vagrant-ansible-docker
+````
+Update nodes.yml to reflect your desired nodes to spin up.
+
+Spin up your environment
+````
+vagrant up
+````
+
+To run ansible from within Vagrant nodes (Ex. site.yml)
+````
+vagrant ssh
+cd /vagrant
+sudo ansible-galaxy install -r requirements.yml
+ansible-playbook -i "localhost," -c local docker.yml
+````
 
 Variable Definitions
 ====================
@@ -42,15 +43,17 @@ Define the nodes to spin up
 ````
 ---
 - name: node-1
-  box: ubuntu/trusty64
-  mem: 512
-  cpus: 1
-  priv_ip: 192.168.250.101
-- name: node-2
-  box: ubuntu/trusty64
-  mem: 512
-  cpus: 1
-  priv_ip: 192.168.250.102
+  box: mrlesmithjr/trusty64
+  mem: 4096
+  cpus: 2
+  ansible_ssh_host_ip: 192.168.202.33 #always create for Ansible provisioning within nodes
+  config_interfaces: "False"  #defines if interfaces below should be created or not...Set to "False" if you do not wish to create the interfaces.
+  interfaces:  #Define additional interface settings
+    - ip: 192.168.12.11
+      auto_config: "True"
+      network_name: 01-to-02
+      method: static
+      type: private_network
 ````
 
 Provisions nodes by bootstrapping using Ansible
@@ -67,35 +70,57 @@ Bootstrap Playbook
     - galaxy_roles:
       - mrlesmithjr.bootstrap
       - mrlesmithjr.base
-    - install_galaxy_roles: true
+    - install_galaxy_roles: false
     - ssh_key_path: '.vagrant/machines/{{ inventory_hostname }}/virtualbox/private_key'
     - update_host_vars: true
   roles:
   tasks:
     - name: updating apt cache
-      apt: update_cache=yes cache_valid_time=3600
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
       when: ansible_os_family == "Debian"
 
     - name: installing ansible pre-reqs
-      apt: name={{ item }} state=present
+      apt:
+        name: "{{ item }}"
+        state: present
       with_items:
+        - git
         - python-pip
         - python-dev
       when: ansible_os_family == "Debian"
 
     - name: adding ansible ppa
-      apt_repository: repo='ppa:ansible/ansible'
+      apt_repository:
+        repo: "ppa:ansible/ansible"
       when: ansible_os_family == "Debian"
 
     - name: installing ansible
-      apt: name=ansible state=latest
+      apt:
+        name: ansible
+        state: latest
       when: ansible_os_family == "Debian"
 
-#    - name: installing ansible
-#      pip: name=ansible state=present
+    - name: installing epel repo
+      yum:
+        name: epel-release
+        state: present
+      when: ansible_os_family == "RedHat"
 
-#    - name: linking ansible hosts inventory
-#      file: src=/etc/ansible/hosts path=/vagrant/ansible/hosts state=link
+    - name: installing Ansible pre-reqs
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - git
+      when: ansible_os_family == "Redhat"
+
+    - name: installing ansible
+      yum:
+        name: ansible
+        state: present
+      when: ansible_os_family == "RedHat"
 
     - name: installing ansible-galaxy roles
       shell: ansible-galaxy install {{ item }} --force
@@ -103,71 +128,66 @@ Bootstrap Playbook
       when: install_galaxy_roles is defined and install_galaxy_roles
 
     - name: ensuring host file exists in host_vars
-      stat: path=./host_vars/{{ inventory_hostname }}
+      stat:
+        path: "./host_vars/{{ inventory_hostname }}"
       delegate_to: localhost
       register: host_var
       sudo: false
       when: update_host_vars is defined and update_host_vars
 
     - name: creating missing host_vars
-      file: path=./host_vars/{{ inventory_hostname }} state=touch
+      file:
+        path: "./host_vars/{{ inventory_hostname }}"
+        state: touch
       delegate_to: localhost
       sudo: false
       when: not host_var.stat.exists
 
     - name: updating ansible_ssh_port
-      lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="^ansible_ssh_port{{ ':' }}" line="ansible_ssh_port{{ ':' }} 22"
+      lineinfile:
+        dest: "./host_vars/{{ inventory_hostname }}"
+        regexp: "^ansible_ssh_port{{ ':' }}"
+        line: "ansible_ssh_port{{ ':' }} 22"
       delegate_to: localhost
       sudo: false
       when: update_host_vars is defined and update_host_vars
 
     - name: updating ansible_ssh_host
-      lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="^ansible_ssh_host{{ ':' }}" line="ansible_ssh_host{{ ':' }} {{ ansible_eth1.ipv4.address }}"
+      lineinfile:
+        dest: "./host_vars/{{ inventory_hostname }}"
+        regexp: "^ansible_ssh_host{{ ':' }}"
+        line: "ansible_ssh_host{{ ':' }} {{ ansible_eth1.ipv4.address }}"
       delegate_to: localhost
       sudo: false
-      when: update_host_vars is defined and update_host_vars
+      when: update_host_vars is defined and update_host_vars and ansible_eth1 is defined
+
+    - name: updating ansible_ssh_host
+      lineinfile:
+        dest: "./host_vars/{{ inventory_hostname }}"
+        regexp: "^ansible_ssh_host{{ ':' }}"
+        line: "ansible_ssh_host{{ ':' }} {{ ansible_enp0s8.ipv4.address }}"
+      delegate_to: localhost
+      sudo: false
+      when: update_host_vars is defined and update_host_vars and ansible_enp0s8 is defined
 
     - name: updating ansible_ssh_key
-      lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="^ansible_ssh_private_key_file{{ ':' }}" line="ansible_ssh_private_key_file{{ ':' }} {{ ssh_key_path }}"
+      lineinfile:
+        dest: "./host_vars/{{ inventory_hostname }}"
+        regexp: "^ansible_ssh_private_key_file{{ ':' }}"
+        line: "ansible_ssh_private_key_file{{ ':' }} {{ ssh_key_path }}"
       delegate_to: localhost
       sudo: false
       when: update_host_vars is defined and update_host_vars
 
     - name: ensuring host_vars is yaml formatted
-      lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="---" line="---" insertbefore=BOF
+      lineinfile:
+        dest: "./host_vars/{{ inventory_hostname }}"
+        regexp: "---"
+        line: "---"
+        insertbefore: BOF
       delegate_to: localhost
       sudo: false
       when: update_host_vars is defined and update_host_vars
-
-````
-
-Usage
-=====
-
-http://everythingshouldbevirtual.com/learning-vagrant-and-ansible-provisioning
-
-````
-git clone https://github.com/mrlesmithjr/vagrant-ansible-template.git
-cd vagrant-ansible-template
-````
-Update nodes.yml to reflect your desired nodes to spin up.
-
-Spin up your environment
-````
-vagrant up
-````
-
-To run ansible from within Vagrant nodes (Ex. site.yml)
-````
-vagrant ssh node-1 # or node-2; both work
-cd /vagrant
-ansible-playbook -i hosts site.yml
-````
-
-To install ansible-galaxy roles within your HostOS
-````
-ansible-galaxy install mrlesmithjr.bootstrap
-ansible-galaxy install mrlesmithjr.base
 ````
 
 License
