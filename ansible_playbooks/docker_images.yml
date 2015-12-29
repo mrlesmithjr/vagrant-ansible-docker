@@ -1,0 +1,38 @@
+---
+- name: manage docker images
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+  vars:
+    - docker_containers:
+        - image: mrlesmithjr/apache2
+          name: web1
+          ports:
+            - "8080:80"
+          state: started
+        - image: mrlesmithjr/apache2
+          name: web2
+          ports:
+            - "8081:80"
+          state: started
+    - docker_images:
+        - image: ubuntu:14.04.3
+          state: present
+        - image: mrlesmithjr/apache2
+          state: present 
+  roles:
+  tasks:
+#    - name: manage docker images
+#      docker_image:
+#        name: "{{ item.image }}"
+#        state: "{{ item.state }}"
+#      with_items: docker_images
+
+    - name: manage docker containers
+      docker:
+        expose: "{{ item.expose | default(omit) }}"
+        name: "{{ item.name | default(omit) }}"
+        image: "{{ item.image }}"
+        ports: "{{ item.ports | default(omit) }}"
+        state: "{{ item.state }}"
+      with_items: docker_containers

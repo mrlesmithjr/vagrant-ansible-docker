@@ -1,0 +1,12 @@
+---
+- name: installs docker package(s)
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+  vars:
+    - configure_firewall: true
+  roles:
+    - role: ansible-docker
+    - role: ansible-ufw
+      when: configure_firewall is defined and configure_firewall
+  tasks:

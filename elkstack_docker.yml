@@ -1,0 +1,56 @@
+---
+- name: Spins up an ELK Stack Docker environment
+  hosts: all
+  sudo: true
+  vars:
+  roles:
+  tasks:
+    - name: Spin up Elasticsearch
+      docker:
+        name: elasticsearch
+        image: mrlesmithjr/elasticsearch:2.1
+        state: started
+        ports:
+          - "9200:9200"
+
+    - name: Spin up Kibana
+      docker:
+        name: kibana
+        image: mrlesmithjr/elk-kibana:4.3.1
+        state: started
+        links:
+          - "elasticsearch:elasticsearch"
+        ports:
+          - "5601:5601"
+
+    - name: Spin up Redis
+      docker:
+        name: redis
+        image: mrlesmithjr/redis
+        state: started
+        ports:
+          - "6379:6379"
+
+    - name: Spin up ELK Pre-Processor
+      docker:
+        name: elk-pre-processor
+        image: mrlesmithjr/elk-pre-processor:2.1
+        state: started
+        links:
+          - "redis:redis"
+        ports:
+          - "514:514"
+          - "514:514/udp"
+          - "1515:1515"
+          - "3515:3515"
+          - "3525:3525"
+          - "10514:10514"
+
+    - name: Spin up ELK Processor
+      docker:
+        name: elk-processor
+        image: mrlesmithjr/elk-processor:2.1
+        state: started
+        links:
+          - "elasticsearch:elasticsearch"
+          - "redis:redis"

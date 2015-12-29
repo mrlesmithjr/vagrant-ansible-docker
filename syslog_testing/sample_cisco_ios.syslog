@@ -1,0 +1,11 @@
+<13>Dec 27 14:01:37 ROUTER.foo.com 23772: Jan 27 02:01:02.911: %SYS-3-CPUHOG: Task ran for 18428 msec (22/9), process = IP SNMP, PC = 32976EC.
+<13>Jan 27 14:01:37 ROUTER.foo.com 77: Jan 27 02:01:02.093: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial4/0, changed state to up
+<13>Jan 27 14:02:30 ROUTER.foo.com 78: Jan 27 02:01:03.093: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial4/0, changed state to down
+<13>Jan 27 14:01:37 ROUTER.foo.com 12313: Jan 27 02:01:03.536: %OSPF-5-ADJCHG: Process 100, Nbr 1.2.3.4 on Serial2/1.2 from FULL to DOWN, Neighbor Down: Interface down or detached
+<13>Jan 27 14:01:37 ROUTER.foo.com 12316: Jan 27 02:01:03.387: %OSPF-5-ADJCHG: Process 100, Nbr 1.2.3.4 on Serial2/1.2 from LOADING to FULL, Loading Done
+<13>Jan 27 14:01:37 router.foo.com 2116715: Jan 27 02:01:03.849: %BGP-5-ADJCHANGE: neighbor 202.43.137.17 Down Peer closed the session
+<13>Jan 27 14:01:37 router.foo.com 2116715: Jan 27 02:01:04.849: %BGP-5-ADJCHANGE: neighbor 202.43.137.17 Down Peer closed the session
+<13>Jan 27 14:01:37 router.foo.com 477: Jan 27 02:01:04.086: %DUAL-5-NBRCHANGE: IP-EIGRP 109: Neighbor 10.1.1.1 (ATM3/0.1) is down: holding time expired
+<13>Jan 27 14:01:37 router.foo.com 345: Jan 27 02:01:04.293: %DUAL-5-NBRCHANGE: IP-EIGRP 109: Neighbor 10.1.1.1 (GigabitEthernet1/2) is down: peer restarted
+<13>Jan 27 14:01:37 router.foo.com 523809: Jan 27 02:01:05.100: %DUAL-5-NBRCHANGE: IP-EIGRP 109: Neighbor 10.1.1.1 (GigabitEthernet1/2) is down: interface down
+<13>Jan 27 14:01:43 router.foo.com 523847: Jan 27 02:01:05.950: %DUAL-5-NBRCHANGE: IP-EIGRP 109: Neighbor 10.1.1.1 (GigabitEthernet1/2) is up: new adjacency
