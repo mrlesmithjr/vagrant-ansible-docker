@@ -56,11 +56,11 @@ Define the nodes to spin up
       type: private_network
 ````
 
-Provisions nodes by bootstrapping using Ansible
+Ansible Playbooks Used
+======================
 ````
 bootstrap.yml
 ````
-Bootstrap Playbook
 ````
 ---
 - hosts: all
@@ -188,6 +188,56 @@ Bootstrap Playbook
       delegate_to: localhost
       sudo: false
       when: update_host_vars is defined and update_host_vars
+````
+
+````
+docker.yml
+````
+````
+---
+- name: installs docker package(s)
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+  vars:
+    - configure_firewall: true
+    - docker_images:
+      - image: ubuntu
+        state: present
+    - docker_opts:  #defines docker service options to be configured
+      - '--dns {{ pri_dns }}'
+      - '--dns {{ sec_dns }}'
+      - '--insecure-registry 192.168.202.34:5000'
+    - pri_dns: 8.8.8.8  #defines primary dns server for your site
+    - sec_dns: 8.8.4.4  #defines secondary dns server for your site
+    - ufw_policies:  #defines default policy for incoming, outgoing and routed (forwarded) traffic...allow, deny or reject
+      - direction: incoming
+        policy: deny
+      - direction: outgoing
+        policy: allow
+      - direction: routed
+        policy: allow
+    - ufw_rules:
+      - rule: limit
+        proto: tcp
+        to_port: 22
+      - rule: allow
+        proto: tcp
+        to_port: 2375
+      - rule: allow
+        proto: tcp
+        to_port: 9200
+      - rule: allow
+        proto: tcp
+        to_port: 9300
+      - rule: allow
+        proto: udp
+        to_port: 54328
+  roles:
+    - role: ansible-docker
+    - role: ansible-ufw
+      when: configure_firewall is defined and configure_firewall
+  tasks:
 ````
 
 License
