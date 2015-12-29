@@ -9,7 +9,6 @@ nodes = YAML.load_file('nodes.yml')
 
 Vagrant.configure(2) do |config|
 #  config.ssh.insert_key = false
-#  config.vm.provision :shell, path: "bootstrap.sh"
 
   nodes.each do |nodes|
     config.vm.define nodes["name"] do |node|
