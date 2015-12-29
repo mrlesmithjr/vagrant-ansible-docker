@@ -51,7 +51,4 @@ Vagrant.configure(2) do |config|
       ansible.playbook = "bootstrap.yml"
     end
   end
-#  if Vagrant.has_plugin?("vagrant-cachier")
-#    config.cache.scope = :box
-#  end
 end

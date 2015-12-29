@@ -27,13 +27,8 @@
         - python-dev
       when: ansible_os_family == "Debian"
 
-    - name: adding ansible ppa
-      apt_repository:
-        repo: "ppa:ansible/ansible"
-      when: ansible_os_family == "Debian"
-
     - name: installing ansible
-      apt:
+      pip:
         name: ansible
         state: latest
       when: ansible_os_family == "Debian"
@@ -43,7 +38,7 @@
         name: epel-release
         state: present
       when: ansible_os_family == "RedHat"
-      
+
     - name: installing Ansible pre-reqs
       yum:
         name: "{{ item }}"
