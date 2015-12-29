@@ -4,6 +4,7 @@
   remote_user: vagrant
   sudo: yes
   vars:
+    - config_docker_users: true  #defines if users should be added to docker group to allow non sudo access to docker
     - configure_firewall: true
     - docker_images:
       - image: ubuntu
@@ -12,6 +13,8 @@
       - '--dns {{ pri_dns }}'
       - '--dns {{ sec_dns }}'
       - '--insecure-registry 192.168.202.34:5000'
+    - docker_users:
+        - vagrant
     - pri_dns: 8.8.8.8  #defines primary dns server for your site
     - sec_dns: 8.8.4.4  #defines secondary dns server for your site
     - ufw_policies:  #defines default policy for incoming, outgoing and routed (forwarded) traffic...allow, deny or reject
@@ -28,15 +31,6 @@
       - rule: allow
         proto: tcp
         to_port: 2375
-      - rule: allow
-        proto: tcp
-        to_port: 9200
-      - rule: allow
-        proto: tcp
-        to_port: 9300
-      - rule: allow
-        proto: udp
-        to_port: 54328
   roles:
     - role: ansible-docker
     - role: ansible-ufw
