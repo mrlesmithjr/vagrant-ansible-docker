@@ -55,7 +55,7 @@
       when: install_galaxy_roles is defined and install_galaxy_roles
 
     - name: installing Ansible requirements (Roles)
-      shell: ansible-galaxy install -r requirements.yml -p roles/
+      shell: ansible-galaxy install -r requirements.yml -f
 
     - name: ensuring host file exists in host_vars
       stat:
