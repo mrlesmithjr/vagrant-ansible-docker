@@ -19,11 +19,20 @@ Usage
 git clone https://github.com/mrlesmithjr/vagrant-ansible-docker.git
 cd vagrant-ansible-docker
 ````
-Update nodes.yml to reflect your desired nodes to spin up.
 
-Spin up your environment
+Spin up your environment (Single Docker Host)
 ````
-vagrant up
+./docker_single_host.sh
+````
+
+Spin up your environment (Multi Docker Hosts) using VirtualBox
+````
+./docker_multi_host_virtualbox.sh
+````
+
+Spin up your environment (Multi Docker Hosts) using Generic (Standalone)
+````
+./docker_multi_host_generic.sh
 ````
 
 To run ansible from within Vagrant nodes (Ex. site.yml)
@@ -32,6 +41,11 @@ vagrant ssh
 cd /vagrant
 sudo ansible-galaxy install -r requirements.yml
 ansible-playbook -i "localhost," -c local docker.yml
+````
+
+Cleaning up environment when done
+````
+./cleanup.sh
 ````
 
 Variable Definitions
