@@ -21,11 +21,11 @@ docker-machine create -d virtualbox \
     --engine-opt="cluster-store=consul://$(docker-machine ip mh-keystore):8500" \
     --engine-opt="cluster-advertise=eth1:2376" \
   mhs-demo1
-  docker-machine create -d virtualbox \
-      --swarm \
-      --swarm-discovery="consul://$(docker-machine ip mh-keystore):8500" \
-      --engine-opt="cluster-store=consul://$(docker-machine ip mh-keystore):8500" \
-      --engine-opt="cluster-advertise=eth1:2376" \
-    mhs-demo2
+docker-machine create -d virtualbox \
+    --swarm \
+    --swarm-discovery="consul://$(docker-machine ip mh-keystore):8500" \
+    --engine-opt="cluster-store=consul://$(docker-machine ip mh-keystore):8500" \
+    --engine-opt="cluster-advertise=eth1:2376" \
+  mhs-demo2
 eval $(docker-machine env --swarm mhs-demo0)
 docker network create --driver overlay $overlay_network
