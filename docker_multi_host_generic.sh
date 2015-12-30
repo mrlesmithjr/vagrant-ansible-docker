@@ -44,5 +44,5 @@ docker-machine create -d generic \
     --engine-opt="cluster-store=consul://$consul_host:8500" \
     --engine-opt="cluster-advertise=eth1:2376" \
   c0-n2
-eval "$(docker-machine env --swarm c0-master)"
-docker network create --driver overlay $overlay_network
+#eval "$(docker-machine env --swarm c0-master)"
+#docker network create --driver overlay $overlay_network
