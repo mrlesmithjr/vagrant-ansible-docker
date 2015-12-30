@@ -12,6 +12,10 @@ VirtualBox (https://www.virtualbox.org/)
 
 Vagrant (https://www.vagrantup.com/)
 
+Docker (https://www.docker.com)
+
+Docker Toolbox (https://www.docker.com/docker-toolbox)
+
 Usage
 =====
 
