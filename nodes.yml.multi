@@ -5,7 +5,7 @@
 # for Static define ip var
 # type should generally be private_network..Other option(s) are: public_network
 - name: kv
-  box: mrlesmithjr/trusty64
+  box: mrlesmithjr/jessie64
   mem: 1024
   cpus: 1
   ansible_ssh_host_ip: 192.168.202.34 #always create for Ansible provisioning within nodes
@@ -17,7 +17,7 @@
 #      method: static
 #      type: private_network
 - name: c0-master
-  box: mrlesmithjr/trusty64
+  box: mrlesmithjr/jessie64
   mem: 2048
   cpus: 1
   ansible_ssh_host_ip: 192.168.202.35 #always create for Ansible provisioning within nodes
@@ -29,7 +29,7 @@
 #      method: static
 #      type: private_network
 - name: c0-n1
-  box: mrlesmithjr/trusty64
+  box: mrlesmithjr/jessie64
   mem: 2048
   cpus: 2
   ansible_ssh_host_ip: 192.168.202.36 #always create for Ansible provisioning within nodes
@@ -41,7 +41,7 @@
 #      method: static
 #      type: private_network
 - name: c0-n2
-  box: mrlesmithjr/trusty64
+  box: mrlesmithjr/jessie64
   mem: 2048
   cpus: 2
   ansible_ssh_host_ip: 192.168.202.37 #always create for Ansible provisioning within nodes
