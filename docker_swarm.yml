@@ -1,0 +1,38 @@
+---
+- hosts: kv
+  remote_user: vagrant
+  sudo: yes
+  tasks:
+    - name: installing Consul key/value store
+      docker:
+        command: "-server -bootstrap"
+        hostname: "consul"
+        image: "progrium/consul"
+        ports:
+          - "8400:8400"
+          - "8500:8500"
+          - "8600:53/udp"
+
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+  vars:
+  tasks:
+    - name: starting swarm agent
+      docker:
+        command: "join consul://{{ hostvars['kv']['ansible_ssh_host'] }}:8500/swarm --addr={{ ansible_ssh_host }}:2375"
+        image: "swarm"
+#        ports: "2375:2375"
+      when: inventory_hostname != "kv" and inventory_hostname != "c0-master"
+
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+  vars:
+  tasks:
+    - name: starting swarm manager
+      docker:
+        command: "manage consul://{{ hostvars['kv']['ansible_ssh_host'] }}:8500/swarm -H 0.0.0.0:2375"
+        image: "swarm"
+#        ports: "2375:2375"
+      when: inventory_hostname == "c0-master"  

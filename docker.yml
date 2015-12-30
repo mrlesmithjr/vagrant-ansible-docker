@@ -12,7 +12,9 @@
     - docker_opts:  #defines docker service options to be configured
       - '--dns {{ pri_dns }}'
       - '--dns {{ sec_dns }}'
-      - '--insecure-registry 192.168.202.34:5000'
+#      - '--insecure-registry 192.168.202.34:5000'
+      - '-H tcp://0.0.0.0:2375'
+      - '-H unix:///var/run/docker.sock'
     - docker_users:
         - vagrant
     - pri_dns: 8.8.8.8  #defines primary dns server for your site
