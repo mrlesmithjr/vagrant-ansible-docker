@@ -1,13 +1,21 @@
 #!/bin/bash
 vagrant destroy -f
-rm -rf .vagrant
-rm host_vars/*
-touch host_vars/dummy
 docker-machine rm mh-keystore -f
-docker-machine rm mhs-demo0 -f
-docker-machine rm mhs-demo1 -f
-docker-machine rm mhs-demo2 -f
-docker-machine rm kv -f
-docker-machine rm c0-master -f
-docker-machine rm c0-n1 -f
-docker-machine rm c0-n2 -f
+for (( num=0; num<=3; num++ ))
+do
+ docker-machine rm mhs-demo$num -f
+ docker-machine rm node$num -f
+done
+if [ -d group_vars ]; then
+  rm -rf group_vars
+fi
+if [ -d host_vars ]; then
+  rm -rf host_vars
+fi
+if [ -d .vagrant ]; then
+  rm -rf .vagrant
+fi
+if [ -d roles ]; then
+  rm -rf roles
+fi
+rm Vagrantfile

@@ -1,17 +1,18 @@
 #!/bin/bash
 #
 # vars
-consul_host=192.168.202.34
+consul_host=192.168.202.200
 overlay_network=my-net
 #
-cp nodes.yml.multi nodes.yml
+ansible-galaxy install -r requirements.yml -f
+cp Vagrantfile.multi Vagrantfile
 vagrant up
 docker-machine create -d generic \
-    --generic-ip-address="192.168.202.34" \
+    --generic-ip-address="192.168.202.200" \
     --generic-ssh-user="vagrant" \
-    --generic-ssh-key=".vagrant/machines/kv/virtualbox/private_key" \
-  kv
-eval $(docker-machine env kv)
+    --generic-ssh-key=".vagrant/machines/node0/virtualbox/private_key" \
+  node0
+eval $(docker-machine env node0)
 docker pull progrium/consul
 docker run -d \
     -p "8500:8500" \
@@ -19,30 +20,30 @@ docker run -d \
     progrium/consul -server -bootstrap
 docker-machine create -d generic \
     --swarm --swarm-master \
-    --generic-ip-address="192.168.202.35" \
+    --generic-ip-address="192.168.202.201" \
     --generic-ssh-user="vagrant" \
-    --generic-ssh-key=".vagrant/machines/c0-master/virtualbox/private_key" \
+    --generic-ssh-key=".vagrant/machines/node1/virtualbox/private_key" \
     --swarm-discovery="consul://$consul_host:8500" \
     --engine-opt="cluster-store=consul://$consul_host:8500" \
     --engine-opt="cluster-advertise=eth1:2376" \
-  c0-master
+  node1
 docker-machine create -d generic \
     --swarm \
-    --generic-ip-address="192.168.202.36" \
+    --generic-ip-address="192.168.202.202" \
     --generic-ssh-user="vagrant" \
-    --generic-ssh-key=".vagrant/machines/c0-n1/virtualbox/private_key" \
+    --generic-ssh-key=".vagrant/machines/node2/virtualbox/private_key" \
     --swarm-discovery="consul://$consul_host:8500" \
     --engine-opt="cluster-store=consul://$consul_host:8500" \
     --engine-opt="cluster-advertise=eth1:2376" \
-  c0-n1
+  node2
 docker-machine create -d generic \
     --swarm \
-    --generic-ip-address="192.168.202.37" \
+    --generic-ip-address="192.168.202.203" \
     --generic-ssh-user="vagrant" \
-    --generic-ssh-key=".vagrant/machines/c0-n2/virtualbox/private_key" \
+    --generic-ssh-key=".vagrant/machines/node3/virtualbox/private_key" \
     --swarm-discovery="consul://$consul_host:8500" \
     --engine-opt="cluster-store=consul://$consul_host:8500" \
     --engine-opt="cluster-advertise=eth1:2376" \
-  c0-n2
-eval "$(docker-machine env --swarm c0-master)"
+  node3
+eval "$(docker-machine env --swarm node1)"
 docker network create --driver overlay $overlay_network

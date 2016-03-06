@@ -2,10 +2,10 @@
 - name: installs docker package(s)
   hosts: all
   remote_user: vagrant
-  sudo: yes
+  become: true
   vars:
     - config_docker_users: true  #defines if users should be added to docker group to allow non sudo access to docker
-    - configure_firewall: true
+    - configure_firewall: false
     - docker_images:
       - image: ubuntu
         state: present

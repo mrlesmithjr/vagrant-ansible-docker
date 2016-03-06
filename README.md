@@ -1,10 +1,10 @@
 Purpose
 =======
 
-Spins up a Vagrant environment for testing Docker. Also allows you to learn Ansible along with Docker.
+Spins up a Vagrant environment for testing Docker and Docker Swarm. Also allows you to learn Ansible along with Docker.
 
 Requirements
-============
+------------
 
 Ansible (http://www.ansible.com/home)
 
@@ -17,7 +17,7 @@ Docker (https://www.docker.com)
 Docker Toolbox (https://www.docker.com/docker-toolbox)
 
 Usage
-=====
+-----
 
 ````
 git clone https://github.com/mrlesmithjr/vagrant-ansible-docker.git
@@ -34,14 +34,15 @@ Spin up your environment (Multi Docker Hosts) using VirtualBox
 ./docker_multi_host_virtualbox.sh
 ````
 
-Spin up your environment (Multi Docker Hosts) using Generic (Standalone)
+Spin up your environment (Multi Docker Hosts) using Generic (Standalone) - Similar scenario to stand-alone external hosts (bare-metal or VMs)
 ````
 ./docker_multi_host_generic.sh
 ````
 
-To run ansible from within Vagrant nodes (Ex. site.yml)
+To run ansible from within Vagrant nodes (Ex. site.yml)  
+replace node0 with any of the following (node0 | node1 | node2 | node3)
 ````
-vagrant ssh
+vagrant ssh node0
 cd /vagrant
 sudo ansible-galaxy install -r requirements.yml
 ansible-playbook -i "localhost," -c local docker.yml
@@ -53,29 +54,11 @@ Cleaning up environment when done
 ````
 
 Variable Definitions
-====================
-````
-nodes.yml
-````
-Define the nodes to spin up
-````
----
-- name: node-1
-  box: mrlesmithjr/trusty64
-  mem: 4096
-  cpus: 2
-  ansible_ssh_host_ip: 192.168.202.33 #always create for Ansible provisioning within nodes
-  config_interfaces: "False"  #defines if interfaces below should be created or not...Set to "False" if you do not wish to create the interfaces.
-  interfaces:  #Define additional interface settings
-    - ip: 192.168.12.11
-      auto_config: "True"
-      network_name: 01-to-02
-      method: static
-      type: private_network
-````
+--------------------
 
 Ansible Playbooks Used
-======================
+----------------------
+
 ````
 bootstrap.yml
 ````
