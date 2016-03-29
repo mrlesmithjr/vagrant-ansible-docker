@@ -4,7 +4,7 @@
 consul_host=192.168.202.200
 overlay_network=my-net
 #
-ansible-galaxy install -r requirements.yml -f
+ansible-galaxy install -r requirements.yml -f -p ./roles
 cp Vagrantfile.multi Vagrantfile
 vagrant up
 docker-machine create -d generic \
