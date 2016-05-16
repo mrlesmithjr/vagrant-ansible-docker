@@ -21,9 +21,12 @@
         name: "{{ item }}"
         state: present
       with_items:
+        - libffi-dev
+        - libssl-dev
         - python-dev
-        - python-pip
-      when: ansible_os_family == "Debian"
+        - python-setuptools
+      when: >
+            ansible_os_family == "Debian"
 
     - name: installing epel repo (RedHat)
       yum:
@@ -38,9 +41,11 @@
         name: "{{ item }}"
         state: present
       with_items:
+        - libffi-devel
+        - openssl-devel
+        - python-crypto
         - python-devel
-        - python-dnf
-        - python-pip
+        - python-setuptools
       when: >
             ansible_os_family == "RedHat" and
             ansible_distribution != "Fedora"
@@ -51,18 +56,41 @@
         state: present
       with_items:
         - gmp-devel
+        - libffi-devel
+        - openssl-devel
         - python-crypto
         - python-devel
         - python-dnf
-        - python-pip
+        - python-setuptools
+        - redhat-rpm-config
       when: >
             ansible_os_family == "RedHat" and
             ansible_distribution == "Fedora"
+
+    - name: installing ansible pre-reqs (openSUSE)
+      zypper:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - gmp-devel
+        - libffi-devel
+        - openssl-devel
+        - python-crypto
+        - python-devel
+        - python-setuptools
+      when: >
+            ansible_os_family == "openSUSE Leap"
+
+    - name: installing python pip
+      easy_install:
+        name: "pip"
+        state: present
 
     - name: installing ansible
       pip:
         name: "ansible"
         state: present
+        version: 1.9.6
 
     - name: ensuring host_vars directory exists
       file:

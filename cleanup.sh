@@ -6,6 +6,11 @@ do
  docker-machine rm mhs-demo$num -f
  docker-machine rm node$num -f
 done
+for file in *.retry; do
+  if [[ -f $file ]]; then
+    rm $file
+  fi
+done
 if [ -d group_vars ]; then
   rm -rf group_vars
 fi
