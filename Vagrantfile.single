@@ -29,8 +29,8 @@ additional_disks = "no"  #Define if additional drives defined should be added (y
 additional_disks_controller = "SATA Controller"
 additional_disks_num = 1  #Define the number of additional disks to add
 additional_disks_size = 10  #Define disk size in GB
-additional_nics = "no"  #Define if additional network adapters should be created (yes | no)
-additional_nics_dhcp = "yes"  #Define if additional network adapters should be DHCP assigned
+additional_nics = "yes"  #Define if additional network adapters should be created (yes | no)
+additional_nics_dhcp = "no"  #Define if additional network adapters should be DHCP assigned
 additional_nics_num = 1  #Define the number of additional nics to add
 ansible_groups = {
   "docker-nodes" => ["node[0:#{N-1}]"],
@@ -46,6 +46,11 @@ port_forwards = [
     :node => "node0",
     :guest => 2375,
     :host => 2375
+  },
+  {
+    :node => "node0",
+    :guest => 80,
+    :host => 8080
   }
 ]
 provision_nodes = "yes"  #Define if provisioners should run (yes | no)
