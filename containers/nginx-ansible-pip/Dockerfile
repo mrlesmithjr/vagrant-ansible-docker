@@ -1,31 +1,22 @@
-FROM ubuntu:14.04
+FROM debian:jessie
 
 MAINTAINER Larry Smith Jr. <mrlesmithjr@gmail.com>
-
-#Update apt-cache
-RUN apt-get update
-
-#Install pre-reqs for Ansible
-RUN apt-get -y install git python-dev python-pip
-
-#Install Ansible
-RUN pip install ansible
 
 #Copy Ansible tasks
 COPY ansible_tasks /opt/ansible_tasks
 
-#Install Ansible role(s)
-RUN ansible-galaxy install -r /opt/ansible_tasks/requirements.yml
-
-#Run Ansible playbook
-RUN ansible-playbook -i "localhost," -c local /opt/ansible_tasks/playbook.yml
-
-#Clean-up packages
-RUN apt-get -y clean && \
-    apt-get -y autoremove
-
-#Clean-up temp files
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+#Update apt-cache, install Ansible and install Ansible roles
+RUN apt-get update && \
+    apt-get -y install build-essential git libssl-dev libffi-dev python-dev python-setuptools && \
+    easy_install pip && \
+    pip install --upgrade setuptools && \
+    pip install ansible && \
+    ansible-galaxy install -r /opt/ansible_tasks/requirements.yml && \
+    ansible-playbook -i "localhost," -c local /opt/ansible_tasks/playbook.yml && \
+    apt-get -y purge build-essential libssl-dev libffi-dev python-dev python-setuptools && \
+    apt-get -y clean && \
+    apt-get -y autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #Expose port(s)
 EXPOSE 80 443

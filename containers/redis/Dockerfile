@@ -2,15 +2,14 @@ FROM debian:jessie
 
 MAINTAINER Larry Smith Jr. <mrlesmithjr@gmail.com>
 
-#Update apt-cache and install NGINX
+#Update apt-cache and install redis
 RUN apt-get update && \
-    apt-get -y install nginx && \
+    apt-get -y install redis-server && \
     apt-get -y clean && \
     apt-get -y autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#Expose port(s)
-EXPOSE 80 443
+#Expose ports
+EXPOSE 6379
 
-#Process start-up
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT  ["/usr/bin/redis-server"]

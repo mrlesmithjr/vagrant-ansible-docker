@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM debian:jessie
 
 MAINTAINER Larry Smith Jr. <mrlesmithjr@gmail.com>
 
