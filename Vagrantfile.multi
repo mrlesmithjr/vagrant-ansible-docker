@@ -56,8 +56,8 @@ port_forwards = [
 ]
 provision_nodes = "yes"  #Define if provisioners should run (yes | no)
 random_ip_assignments = "no"  #Define if using static IP address are random generated
-server_cpus = 1  #Define number of CPU cores...will be ignored if custom_cpu_mem == "yes"
-server_memory = 1024  #Define amount of memory to assign to node(s)...will be ignored if custom_cpu_mem == "yes"
+server_cpus = 2  #Define number of CPU cores...will be ignored if custom_cpu_mem == "yes"
+server_memory = 2048  #Define amount of memory to assign to node(s)...will be ignored if custom_cpu_mem == "yes"
 subnet = "192.168.202."  #Define subnet for private_network (If not using DHCP)
 subnet_ip_start = 200  #Define starting last octet of the subnet range to begin addresses for node(s)
 
